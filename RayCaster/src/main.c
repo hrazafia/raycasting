@@ -44,7 +44,7 @@ int	draw_loop(t_game *game)
 	t_player *player = &game->player;
 	move_player(player);
 	clear_image(game);
-        draw_square(player->x, player->y, 5, 0x00FF00, game);
+        draw_square(player->x, player->y, 10, 0x00FF00, game);
 	mlx_put_image_to_window(game->mlx, game->win, game->img, 0, 0);
 	return 0;
 }

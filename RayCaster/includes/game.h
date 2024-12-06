@@ -10,6 +10,13 @@
 #include <stdbool.h>
 #include <math.h>
 
+# define W 119
+# define A 97
+# define S 115
+# define D 100 
+
+# define PI 3.1459265359
+
 typedef struct s_game
 {
 	void	*mlx;
@@ -20,5 +27,17 @@ typedef struct s_game
 	int	size_line;
 	int	endian;
 }				t_game;
+
+typedef struct s_player
+{
+	float x;
+	float y;
+	bool key_up;
+	bool key_down;
+	bool key_left;
+	bool key_right;
+}				t_player;
+
+void	init_player(t_player *player);
 
 #endif

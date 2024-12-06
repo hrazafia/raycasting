@@ -37,6 +37,7 @@ typedef struct s_game
 	int	size_line;
 	int	endian;
 	t_player player;
+	char **map;
 }				t_game;
 
 void	init_player(t_player *player);

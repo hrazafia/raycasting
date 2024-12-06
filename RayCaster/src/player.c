@@ -10,28 +10,28 @@ void	init_player(t_player *player)
 	player->key_left = false;
 }
 
-int	key_release(int keycode, t_player *player)
+int	key_press(int keycode, t_player *player)
 {
-	if (keycode == W)
+	if(keycode == W)
 		player->key_up = true;
-	if (keycode == S)
+	if(keycode == S)
 		player->key_down = true;
-	if (keycode == A)
+	if(keycode == A)
 		player->key_left = true;
-	if (keycode == D)
+	if(keycode == D)
 		player->key_right = true;
 	return 0;
 }
 
-int	key_press(int keycode, t_player *player)
+int	key_release(int keycode, t_player *player)
 {
-	if (keycode == W)
+	if(keycode == W)
 		player->key_up = false;
-	if (keycode == S)
+	if(keycode == S)
 		player->key_down = false;
-	if (keycode == A)
+	if(keycode == A)
 		player->key_left = false;
-	if (keycode == D)
+	if(keycode == D)
 		player->key_right = false;
 	return 0;
 }

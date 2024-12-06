@@ -53,7 +53,7 @@ void	draw_map(t_game *game)
 	for (int y = 0; map[y]; y++)
 		for (int x = 0; map[y][x]; x++)
 			if (map[y][x] == '1')
-				draw_square(x * 64, y * 64, 64, color, game);
+				draw_square(x * BLOCK, y * BLOCK, BLOCK, color, game);
 }
 
 void	init_game(t_game *game)

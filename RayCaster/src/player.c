@@ -49,11 +49,11 @@ int	key_release(int keycode, t_player *player)
 
 void move_player(t_player *player)
 {
-	int	speed = 5;
-	float	angle_speed = 0.1;
+	int	speed = 3;
+	float	angle_speed = 0.03;
 	float	cos_angle = cos(player->angle);
 	float	sin_angle = sin(player->angle);
-	
+
 	if (player->left_rotate)
 		player->angle -= angle_speed;
 	if (player->right_rotate)
@@ -62,7 +62,7 @@ void move_player(t_player *player)
 		player->angle = 0;
 	if (player->angle < 0)
 		player->angle = 2 * PI;
-	
+
 	if (player->key_up)
 	{
 		player->x += cos_angle * speed;
@@ -75,12 +75,12 @@ void move_player(t_player *player)
 	}
 	if (player->key_left)
 	{
-		player->x += cos_angle * speed;
-		player->y -= sin_angle * speed;
+		player->x += sin_angle * speed;
+		player->y -= cos_angle * speed;
 	}
 	if (player->key_right)
 	{
-		player->x -= cos_angle * speed;
-		player->y += sin_angle * speed;
-	}	
+		player->x -= sin_angle * speed;
+		player->y += cos_angle * speed;
+	}
 }

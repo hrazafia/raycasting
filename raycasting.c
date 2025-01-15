@@ -1,16 +1,36 @@
 typedef struct s_player
 {
-	data.player.posX = 7;
-   	data.player.posY = 7;
-   	data.player.dirX = -1;
-   	data.player.dirY = 0;
+	double	pos_x;
+	double	pos_y;
+	double	dir_x;
+	double	dir_y;
 }		t_player;
 
 typedef struct s_camera
 {
-	   data.player.planeX = 0;
-    data.player.planeY = 0.68;
+	double	plane_x;
+	double	plane_y;
+	double	x;
 }		t_camera;
+
+typedef struct s_input
+{
+	int	left_rotate;
+	int	right_rotate;
+	int	key_up;
+	int	key_down;
+	int	key_left;
+	int	key_right;
+}		t_input;
+
+typedef struct s_ray
+{
+	double		dir_x;
+	double		dir_y;
+	double		pos_x;
+	double		pos_y;
+	t_ray_state	state;
+} t_ray;
 
 for (int x = 0; x < WIN_WIDTH; x++)
 {

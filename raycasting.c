@@ -47,72 +47,70 @@ typedef struct s_ray
 	t_ray_state	state;
 }		t_ray;
 
-for (int x = 0; x < WIN_WIDTH; x++)
+int	x;
+t_ray	ray;
+int	hit;
+
+x = 0;
+while (x < WIN_WIDTH)
 {
-        double cameraX = 2 * x / (double)WIN_WIDTH - 1;
-        double rayDirX = data->player.dirX + data->player.planeX * cameraX;
-        double rayDirY = data->player.dirY + data->player.planeY * cameraX;
+	data->camera.x = 2 * x / (double) WIN_WIDTH - 1;
+        ray.dir_x = data->player.dir_x + camera.plane_x * camera.x;
+        ray.dir_y = data->player.dir_y + camera.plane_y * camera.x;
+	ray.state.map_x = data->player.pos_x;
+	ray.state.map_y = data->player.pos_y;
+	
+	ray.state.delta_dist_x = fabs(1 / ray.dir_x);
+	ray.state.delta_dist_y = fabs(1 / ray.dir_y);
 
-        int mapX = (int)data->player.posX;
-        int mapY = (int)data->player.posY;
-
-        double sideDistX;
-        double sideDistY;
-
-        double deltaDistX = fabs(1 / rayDirX);
-        double deltaDistY = fabs(1 / rayDirY);
-        double perpWallDist;
-
-        int stepX;
-        int stepY;
-
-        int hit = 0;
-        int side;
-
-        if (rayDirX < 0)
+	if (ray.dir_x < 0)
         {
-            stepX = -1;
-            sideDistX = (data->player.posX - mapX) * deltaDistX;
+		ray.state.step_x = -1;
+		ray.state.side_dist_x = (data->player.pos_x - ray.state.map_x) * ray.state.delta_dist_x;
         }
         else
         {
-            stepX = 1;
-            sideDistX = (mapX + 1.0 - data->player.posX) * deltaDistX;
+            ray.state.step_x = 1;
+            ray.state.side_dist_x = (ray.state.map_x + 1.0 - data->player.pos_x) * ray.state.delta_dist_x;
         }
-        if (rayDirY < 0)
+        if (ray.dir_y < 0)
         {
-            stepY = -1;
-            sideDistY = (data->player.posY - mapY) * deltaDistY;
+		ray.state.step_y = -1;
+		ray.state.side_dist_y = (data->player.pos_y - ray.state.map_y) * ray.state.delta_dist_y;
         }
         else
         {
-            stepY = 1;
-            sideDistY = (mapY + 1.0 - data->player.posY) * deltaDistY;
+            ray.state.step_y = 1;
+            ray.state_side_dist_y = (ray.state.map_y + 1.0 - data->player.pos_y) * ray.state.delta_dist_y;
         }
+        
+        
+	hit = 0;
+	while (!hit)
+	{
+		if (ray.state.side_dist_x < ray.state_side_dist_y)
+		{
+			ray.state.side_dist_x += ray.state.delta_dist_x
+			ray.state.map_x += ray.state.step_x;
+			ray.state.side = 0;
+		}
+		else
+		{
+			ray.state.side_dist_y += ray.state.delta_dist_y;
+			ray.state.map_y += ray.state.step_y;
+			ray.state.side = 1;
+		}
+		if (data->map[ray.state.map_x][ray.state.map_y] == 1
+			|| data->map[ray.state.map_x][ray.state.map_y] == 2)
+			hit = 1;
+	}
 
-        while (!hit)
-        {
-            if (sideDistX < sideDistY)
-            {
-                sideDistX += deltaDistX;
-                mapX += stepX;
-                side = 0;
-            }
-            else
-            {
-                sideDistY += deltaDistY;
-                mapY += stepY;
-                side = 1;
-            }
-            if (data->map[mapX][mapY] == 1 || data->map[mapX][mapY] == 2) hit = 1;
-        }
-
-        if (side == 0)
-            perpWallDist = (mapX - data->player.posX + (1 - stepX) / 2) / rayDirX;
+        if (ray.state.side == 0)
+            ray.state.perp_dist = (ray.state.map_x - data->player.pos_x + (1 - ray.state.step_x) / 2) / ray.dir_x;
         else
-            perpWallDist = (mapY - data->player.posY + (1 - stepY) / 2) / rayDirY;
+            ray.state.perp_dist = (ray.state.map_y - data->player.pos_y + (1 - ray.state.step_y) / 2) / ray.dir_y;
 
-        zBuffer[x] = perpWallDist; // Stocke la distance du mur pour c rayon.
+        z_buffer[x] = ray.state.perp_dist;
 
         int lineHeight = (int)(WIN_HEIGHT / perpWallDist);
 
@@ -152,4 +150,5 @@ for (int x = 0; x < WIN_WIDTH; x++)
             unsigned int color = get_texture_pixel(&data->textures[texNum], texX, texY);
             draw_pixel(data, x, y, color);
         }
-    }
+	x++;
+}

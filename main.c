@@ -310,18 +310,10 @@ int handle_key(t_data *data)
 	return 0;
 }
 
-int	render(t_data *data) 
+void	raycasting(t_data *data)
 {
-	unsigned long	current_time = get_time_in_ms();
-	unsigned long	frame_time = current_time - last_frame_time;
 	t_ray			ray;
-
-	if (frame_time < (1000 / fps))
-		return (0);
-	last_frame_time = current_time;
-	delta_time = frame_time / 1000.0;
-	handle_key(data);
-	draw_ceil_floor(data);
+	
 	for (int x = 0; x < WIN_WIDTH; x++)
 	{
 		data->camera.x = 2 * x / (double) WIN_WIDTH - 1;
@@ -413,6 +405,20 @@ int	render(t_data *data)
 			draw_pixel(data, x, y, color);
 		}
 	}
+}
+
+int	render(t_data *data) 
+{
+	unsigned long	current_time = get_time_in_ms();
+	unsigned long	frame_time = current_time - last_frame_time;
+
+	if (frame_time < (1000 / fps))
+		return (0);
+	last_frame_time = current_time;
+	delta_time = frame_time / 1000.0;
+	handle_key(data);
+	draw_ceil_floor(data);
+	raycasting(data);
 	mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
 	return (0);
 }

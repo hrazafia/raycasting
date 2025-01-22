@@ -269,36 +269,28 @@ void	translate_right(t_data *data, t_player *player)
 
 void	rotate_left(t_data *data, t_player *player)
 {
-	double old_dir_x;
 	double old_plane_x;
+	double old_dir_x;
 	
 	old_dir_x = data->player.dir.x;
-	data->player.dir.x = data->player.dir.x * cos(ROT_SPEED * delta_time)
-		- data->player.dir.y * sin(ROT_SPEED * delta_time);
-	data->player.dir.y = old_dir_x * sin(ROT_SPEED * delta_time)
-		+ data->player.dir.y * cos(ROT_SPEED * delta_time);
+	data->player.dir.x = data->player.dir.x * cos(ROT_SPEED * delta_time) - data->player.dir.y * sin(ROT_SPEED * delta_time);
+	data->player.dir.y = old_dir_x * sin(ROT_SPEED * delta_time) + data->player.dir.y * cos(ROT_SPEED * delta_time);
 	old_plane_x = data->camera.plane.x;
-	data->camera.plane.x = data->camera.plane.x * cos(ROT_SPEED * delta_time)
-		- data->camera.plane.y * sin(ROT_SPEED * delta_time);
-	data->camera.plane.y = old_plane_x * sin(ROT_SPEED * delta_time)
-		+ data->camera.plane.y * cos(ROT_SPEED * delta_time);
+	data->camera.plane.x = data->camera.plane.x * cos(ROT_SPEED * delta_time) - data->camera.plane.y * sin(ROT_SPEED * delta_time);
+	data->camera.plane.y = old_plane_x * sin(ROT_SPEED * delta_time) + data->camera.plane.y * cos(ROT_SPEED * delta_time);
 }
 
 void	rotate_right(t_data *data, t_player *player)
 {
-	double old_dir_x;
 	double old_plane_x;
+	double old_dir_x;
 	
 	old_dir_x = data->player.dir.x;
-	data->player.dir.x = data->player.dir.x * cos(-ROT_SPEED * delta_time)
-		- data->player.dir.y * sin(-ROT_SPEED * delta_time);
-	data->player.dir.y = old_dir_x * sin(-ROT_SPEED * delta_time)
-		+ data->player.dir.y * cos(-ROT_SPEED * delta_time);
+	data->player.dir.x = data->player.dir.x * cos(-ROT_SPEED * delta_time) - data->player.dir.y * sin(-ROT_SPEED * delta_time);
+	data->player.dir.y = old_dir_x * sin(-ROT_SPEED * delta_time) + data->player.dir.y * cos(-ROT_SPEED * delta_time);
 	old_plane_x = data->camera.plane.x;
-	data->camera.plane.x = data->camera.plane.x * cos(-ROT_SPEED * delta_time)
-		- data->camera.plane.y * sin(-ROT_SPEED * delta_time);
-	data->camera.plane.y = old_plane_x * sin(-ROT_SPEED * delta_time)
-		+ data->camera.plane.y * cos(-ROT_SPEED * delta_time);
+	data->camera.plane.x = data->camera.plane.x * cos(-ROT_SPEED * delta_time) - data->camera.plane.y * sin(-ROT_SPEED * delta_time);
+	data->camera.plane.y = old_plane_x * sin(-ROT_SPEED * delta_time) + data->camera.plane.y * cos(-ROT_SPEED * delta_time);
 }
 
 int handle_key(t_data *data)
@@ -318,128 +310,100 @@ int handle_key(t_data *data)
 	return 0;
 }
 
-void	ray_init(t_data *data, t_ray *ray)
+void	raycasting(t_data *data)
 {
-	data->camera.x = 2 * x / (double) WIN_WIDTH - 1;
-	ray.dir.x = data->player.dir.x + data->camera.plane.x * data->camera.x;
-	ray.dir.y = data->player.dir.y + data->camera.plane.y * data->camera.x;
-
-	ray.map.x = (int) data->player.pos.x;
-	ray.map.y = (int) data->player.pos.y;
-
-	ray.delta_dist.x = (ray.dir.x == 0) ? 1e30 : fabs(1 / ray.dir.x);
-	ray.delta_dist.y = (ray.dir.y == 0) ? 1e30 : fabs(1 / ray.dir.y);
-
-	if (ray.dir.x < 0)
-	{
-		ray.step.x = -1;
-		ray.side_dist.x = (data->player.pos.x - ray.map.x) * ray.delta_dist.x;
-	}
-	else
-	{
-		ray.step.x = 1;
-		ray.side_dist.x = (ray.map.x + 1.0 - data->player.pos.x) * ray.delta_dist.x;
-	}
-	if (ray.dir.y < 0)
-	{
-		ray.step.y = -1;
-		ray.side_dist.y = (data->player.pos.y - ray.map.y) * ray.delta_dist.y;
-	}
-	else
-	{
-		ray.step.y = 1;
-		ray.side_dist.y = (ray.map.y + 1.0 - data->player.pos.y) * ray.delta_dist.y;
-	}
-}
-
-void	dda(t_data *data, t_ray *ray)
-{
-	int	hit;
+	t_ray			ray;
 	
-	hit = 0;
-	while (!hit)
+	for (int x = 0; x < WIN_WIDTH; x++)
 	{
-		if (ray->side_dist.x < ray->side_dist.y)
+		data->camera.x = 2 * x / (double) WIN_WIDTH - 1;
+		ray.dir.x = data->player.dir.x + data->camera.plane.x * data->camera.x;
+		ray.dir.y = data->player.dir.y + data->camera.plane.y * data->camera.x;
+
+		ray.map.x = (int) data->player.pos.x;
+		ray.map.y = (int) data->player.pos.y;
+
+		ray.delta_dist.x = (ray.dir.x == 0) ? 1e30 : fabs(1 / ray.dir.x);
+		ray.delta_dist.y = (ray.dir.y == 0) ? 1e30 : fabs(1 / ray.dir.y);
+
+		int hit = 0;
+		if (ray.dir.x < 0)
 		{
-			ray->side_dist.x += ray->delta_dist.x;
-			ray->map.x += ray->step.x;
-			ray->side = 0;
+			ray.step.x = -1;
+			ray.side_dist.x = (data->player.pos.x - ray.map.x) * ray.delta_dist.x;
 		}
 		else
 		{
-			ray->side_dist.y += ray->delta_dist.y;
-			ray->map.y += ray->step.y;
-			ray->side = 1;
+			ray.step.x = 1;
+			ray.side_dist.x = (ray.map.x + 1.0 - data->player.pos.x) * ray.delta_dist.x;
 		}
-		if (data->map[ray->map.x][ray->map.y] == 1)
-			hit = 1;
-	}
-}
+		if (ray.dir.y < 0)
+		{
+			ray.step.y = -1;
+			ray.side_dist.y = (data->player.pos.y - ray.map.y) * ray.delta_dist.y;
+		}
+		else
+		{
+			ray.step.y = 1;
+			ray.side_dist.y = (ray.map.y + 1.0 - data->player.pos.y) * ray.delta_dist.y;
+		}
 
-void	calc_perp_dist(t_ray *ray)
-{
-	if (ray->side == 0)
-	{
-		ray->perp_dist = (ray->map.x - data->player.pos.x
-			+ (1 - ray->step.x) / 2) / ray->dir.x;
-	}
-	else
-	{
-		ray->perp_dist = (ray->map.y - data->player.pos.y
-			+ (1 - ray->step.y) / 2) / ray->dir.y;
-	}
+		while (!hit)
+		{
+			if (ray.side_dist.x < ray.side_dist.y)
+			{
+				ray.side_dist.x += ray.delta_dist.x;
+				ray.map.x += ray.step.x;
+				ray.side = 0;
+			}
+			else
+			{
+				ray.side_dist.y += ray.delta_dist.y;
+				ray.map.y += ray.step.y;
+				ray.side = 1;
+			}
+			if (data->map[ray.map.x][ray.map.y] == 1)
+				hit = 1;
+		}
 
-}
+		if (ray.side == 0)
+			ray.perp_dist = (ray.map.x - data->player.pos.x + (1 - ray.step.x) / 2) / ray.dir.x;
+		else
+			ray.perp_dist = (ray.map.y - data->player.pos.y + (1 - ray.step.y) / 2) / ray.dir.y;
 
-void	draw_wall(t_ray *ray)
-{
-	int lineHeight = (int)(WIN_HEIGHT / ray->perp_dist);
+		int lineHeight = (int)(WIN_HEIGHT / ray.perp_dist);
 
-	int drawStart = -lineHeight / 2 + WIN_HEIGHT / 2;
-	if (drawStart < 10) drawStart = 0;
-	int drawEnd = lineHeight / 2 + WIN_HEIGHT / 2;
-	if (drawEnd >= WIN_HEIGHT) drawEnd = WIN_HEIGHT - 1;
+		int drawStart = -lineHeight / 2 + WIN_HEIGHT / 2;
+		if (drawStart < 10) drawStart = 0;
+		int drawEnd = lineHeight / 2 + WIN_HEIGHT / 2;
+		if (drawEnd >= WIN_HEIGHT) drawEnd = WIN_HEIGHT - 1;
 
-	int texNum = 0;
-	if (ray->side == 1)
-		texNum = (ray->step.y > 0) ? 2 : 3;
-	else
-		texNum = (ray->step.x > 0) ? 1 : 0;
+		int texNum = 0;
+		if (ray.side == 1)
+			texNum = (ray.step.y > 0) ? 2 : 3;
+		else
+			texNum = (ray.step.x > 0) ? 1 : 0;
 		
-	double wallX;
-	if (ray.side == 0)
-		wallX = data->player.pos.y + ray->perp_dist * ray->dir.y;
-	else
-		wallX = data->player.pos.x + ray->perp_dist * ray->dir.x;
+		double wallX;
+		if (ray.side == 0)
+			wallX = data->player.pos.y + ray.perp_dist * ray.dir.y;
+		else
+			wallX = data->player.pos.x + ray.perp_dist * ray.dir.x;
 
 		wallX -= floor(wallX);
 
-	int texX = (int)(wallX * TEX_WIDTH);
+		int texX = (int)(wallX * TEX_WIDTH);
 		
-	if (ray->side == 0 && ray->dir.x > 0) texX = TEX_WIDTH - texX - 1;
-	if (ray->side == 1 && ray->dir.y < 0) texX = TEX_WIDTH - texX - 1;
+		if (ray.side == 0 && ray.dir.x > 0) texX = TEX_WIDTH - texX - 1;
+		if (ray.side == 1 && ray.dir.y < 0) texX = TEX_WIDTH - texX - 1;
 
-	for (int y = drawStart; y < drawEnd; y++)
-	{
-		int d = y * 256 - WIN_HEIGHT * 128 + lineHeight * 128;
-		int texY = ((d * TEX_HEIGHT) / lineHeight) / 256;
-		unsigned int color = get_texture_pixel(&data->textures[texNum], texX, texY);
-		draw_pixel(data, x, y, color);
-	}
-}
-
-void	raycasting(t_data *data)
-{
-	int	x;
-	t_ray	ray;
-	
-	for (x < WIN_WIDTH)
-	{
-		init_ray(data, &ray);
-		dda(data, &ray);
-		calc_perp_dist(&ray);
-		draw_wall(&ray);
-		i++;
+		for (int y = drawStart; y < drawEnd; y++)
+		{
+			int d = y * 256 - WIN_HEIGHT * 128 + lineHeight * 128;
+			int texY = ((d * TEX_HEIGHT) / lineHeight) / 256;
+			unsigned int color = get_texture_pixel(&data->textures[texNum], texX, texY);
+			draw_pixel(data, x, y, color);
+		}
 	}
 }
 

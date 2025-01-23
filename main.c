@@ -109,6 +109,8 @@ typedef struct s_data
 	t_texture	textures[4];
 }				t_data;
 
+typedef void	(*t_func)(t_data *data, t_ray *ray, int x);
+
 unsigned long	get_time_in_ms()
 {
 	struct timeval	time;
@@ -363,7 +365,7 @@ int	is_limit(int step, int limit)
 		return (1);
 }
 
-void	dda(t_data *data, t_ray *ray, int entity, int limit)
+void	dda(t_data *data, t_ray *ray, int limit)
 {
 	int	step;
 	int	hit;
@@ -384,7 +386,7 @@ void	dda(t_data *data, t_ray *ray, int entity, int limit)
 			ray->map.y += ray->step.y;
 			ray->side = 1;
 		}
-		if (data->map[ray->map.x][ray->map.y] == entity)
+		if (data->map[ray->map.x][ray->map.y] > 0)
 			hit = 1;
 		step++;
 	}
@@ -442,7 +444,7 @@ void	draw_wall(t_data *data, t_ray *ray, int x)
 	}
 }
 
-void	raycasting(t_data *data, int entity, int limit)
+void	raycasting(t_data *data, int limit, t_func func)
 {
 	int	x;
 	t_ray	ray;
@@ -451,9 +453,9 @@ void	raycasting(t_data *data, int entity, int limit)
 	while (x < WIN_WIDTH)
 	{
 		init_ray(data, &ray, x);
-		dda(data, &ray, entity, limit);
+		dda(data, &ray, limit);
 		calc_perp_dist(data, &ray);
-		draw_wall(data, &ray, x);
+		func(data, &ray, x);
 		x++;
 	}
 }
@@ -469,7 +471,7 @@ int	render(t_data *data)
 	delta_time = frame_time / 1000.0;
 	handle_key(data);
 	draw_ceil_floor(data);
-	raycasting(data, WALL, INF);
+	raycasting(data, INF, draw_wall);
 	mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
 	return (0);
 }

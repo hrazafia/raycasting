@@ -6,7 +6,7 @@
 /*   By: hrazafia <hrazafia@student.42antanana      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 07:40:02 by hrazafia          #+#    #+#             */
-/*   Updated: 2025/01/22 11:21:17 by hrazafia         ###   ########.fr       */
+/*   Updated: 2025/01/23 08:49:49 by hrazafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -352,12 +352,24 @@ void	init_ray(t_data *data, t_ray *ray, int x)
 	}
 }
 
-void	dda(t_data *data, t_ray *ray, int entity)
+int	is_limit(int step, int limit)
 {
+	if (limit == -1)
+		return (0);
+	if (step < limit)
+		return (0);
+	else
+		return (1);
+}
+
+void	dda(t_data *data, t_ray *ray, int entity, int limit)
+{
+	int	step;
 	int	hit;
-	
+
 	hit = 0;
-	while (!hit)
+	step = 0;
+	while (!hit && !is_limit(step, limit))
 	{
 		if (ray->side_dist.x < ray->side_dist.y)
 		{
@@ -373,6 +385,7 @@ void	dda(t_data *data, t_ray *ray, int entity)
 		}
 		if (data->map[ray->map.x][ray->map.y] == entity)
 			hit = 1;
+		step++;
 	}
 }
 
@@ -437,7 +450,7 @@ void	raycasting(t_data *data, int entity)
 	while (x < WIN_WIDTH)
 	{
 		init_ray(data, &ray, x);
-		dda(data, &ray, entity);
+		dda(data, &ray, entity, -1);
 		calc_perp_dist(data, &ray);
 		draw_wall(data, &ray, x);
 		x++;

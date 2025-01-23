@@ -352,7 +352,7 @@ void	init_ray(t_data *data, t_ray *ray, int x)
 	}
 }
 
-void	dda(t_data *data, t_ray *ray)
+void	dda(t_data *data, t_ray *ray, int entity)
 {
 	int	hit;
 	
@@ -371,7 +371,7 @@ void	dda(t_data *data, t_ray *ray)
 			ray->map.y += ray->step.y;
 			ray->side = 1;
 		}
-		if (data->map[ray->map.x][ray->map.y] == 1)
+		if (data->map[ray->map.x][ray->map.y] == entity)
 			hit = 1;
 	}
 }
@@ -428,7 +428,7 @@ void	draw_wall(t_data *data, t_ray *ray, int x)
 	}
 }
 
-void	raycasting(t_data *data)
+void	raycasting(t_data *data, int entity)
 {
 	int	x;
 	t_ray	ray;
@@ -437,7 +437,7 @@ void	raycasting(t_data *data)
 	while (x < WIN_WIDTH)
 	{
 		init_ray(data, &ray, x);
-		dda(data, &ray);
+		dda(data, &ray, entity);
 		calc_perp_dist(data, &ray);
 		draw_wall(data, &ray, x);
 		x++;
@@ -455,7 +455,7 @@ int	render(t_data *data)
 	delta_time = frame_time / 1000.0;
 	handle_key(data);
 	draw_ceil_floor(data);
-	raycasting(data);
+	raycasting(data, WALL);
 	mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
 	return (0);
 }

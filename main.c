@@ -32,6 +32,7 @@
 #define FOV 66
 
 #define WALL 1
+#define INF -1
 
 unsigned long	last_frame_time = 0;
 double			delta_time = 0;
@@ -450,7 +451,7 @@ void	raycasting(t_data *data, int entity)
 	while (x < WIN_WIDTH)
 	{
 		init_ray(data, &ray, x);
-		dda(data, &ray, entity, -1);
+		dda(data, &ray, entity, INF);
 		calc_perp_dist(data, &ray);
 		draw_wall(data, &ray, x);
 		x++;

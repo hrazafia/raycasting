@@ -6,7 +6,7 @@
 /*   By: hrazafia <hrazafia@student.42antanana      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 07:40:02 by hrazafia          #+#    #+#             */
-/*   Updated: 2025/01/23 08:49:49 by hrazafia         ###   ########.fr       */
+/*   Updated: 2025/01/23 10:26:48 by hrazafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -444,7 +444,7 @@ void	draw_wall(t_data *data, t_ray *ray, int x)
 	}
 }
 
-void	raycasting(t_data *data, int limit, t_func func)
+void	raycasting(t_data *data, int limit, t_func draw)
 {
 	int	x;
 	t_ray	ray;
@@ -455,7 +455,7 @@ void	raycasting(t_data *data, int limit, t_func func)
 		init_ray(data, &ray, x);
 		dda(data, &ray, limit);
 		calc_perp_dist(data, &ray);
-		func(data, &ray, x);
+		draw(data, &ray, x);
 		x++;
 	}
 }

@@ -318,37 +318,37 @@ int handle_key(t_data *data)
 	return 0;
 }
 
-void	ray_init(t_data *data, t_ray *ray)
+void	init_ray(t_data *data, t_ray *ray, int x)
 {
 	data->camera.x = 2 * x / (double) WIN_WIDTH - 1;
-	ray.dir.x = data->player.dir.x + data->camera.plane.x * data->camera.x;
-	ray.dir.y = data->player.dir.y + data->camera.plane.y * data->camera.x;
+	ray->dir.x = data->player.dir.x + data->camera.plane.x * data->camera.x;
+	ray->dir.y = data->player.dir.y + data->camera.plane.y * data->camera.x;
 
-	ray.map.x = (int) data->player.pos.x;
-	ray.map.y = (int) data->player.pos.y;
+	ray->map.x = (int) data->player.pos.x;
+	ray->map.y = (int) data->player.pos.y;
 
-	ray.delta_dist.x = (ray.dir.x == 0) ? 1e30 : fabs(1 / ray.dir.x);
-	ray.delta_dist.y = (ray.dir.y == 0) ? 1e30 : fabs(1 / ray.dir.y);
+	ray->delta_dist.x = (ray->dir.x == 0) ? 1e30 : fabs(1 / ray->dir.x);
+	ray->delta_dist.y = (ray->dir.y == 0) ? 1e30 : fabs(1 / ray->dir.y);
 
-	if (ray.dir.x < 0)
+	if (ray->dir.x < 0)
 	{
-		ray.step.x = -1;
-		ray.side_dist.x = (data->player.pos.x - ray.map.x) * ray.delta_dist.x;
+		ray->step.x = -1;
+		ray->side_dist.x = (data->player.pos.x - ray->map.x) * ray->delta_dist.x;
 	}
 	else
 	{
-		ray.step.x = 1;
-		ray.side_dist.x = (ray.map.x + 1.0 - data->player.pos.x) * ray.delta_dist.x;
+		ray->step.x = 1;
+		ray->side_dist.x = (ray->map.x + 1.0 - data->player.pos.x) * ray->delta_dist.x;
 	}
-	if (ray.dir.y < 0)
+	if (ray->dir.y < 0)
 	{
-		ray.step.y = -1;
-		ray.side_dist.y = (data->player.pos.y - ray.map.y) * ray.delta_dist.y;
+		ray->step.y = -1;
+		ray->side_dist.y = (data->player.pos.y - ray->map.y) * ray->delta_dist.y;
 	}
 	else
 	{
-		ray.step.y = 1;
-		ray.side_dist.y = (ray.map.y + 1.0 - data->player.pos.y) * ray.delta_dist.y;
+		ray->step.y = 1;
+		ray->side_dist.y = (ray->map.y + 1.0 - data->player.pos.y) * ray->delta_dist.y;
 	}
 }
 
@@ -376,7 +376,7 @@ void	dda(t_data *data, t_ray *ray)
 	}
 }
 
-void	calc_perp_dist(t_ray *ray)
+void	calc_perp_dist(t_data *data, t_ray *ray)
 {
 	if (ray->side == 0)
 	{
@@ -391,7 +391,7 @@ void	calc_perp_dist(t_ray *ray)
 
 }
 
-void	draw_wall(t_ray *ray)
+void	draw_wall(t_data *data, t_ray *ray, int x)
 {
 	int lineHeight = (int)(WIN_HEIGHT / ray->perp_dist);
 
@@ -407,7 +407,7 @@ void	draw_wall(t_ray *ray)
 		texNum = (ray->step.x > 0) ? 1 : 0;
 		
 	double wallX;
-	if (ray.side == 0)
+	if (ray->side == 0)
 		wallX = data->player.pos.y + ray->perp_dist * ray->dir.y;
 	else
 		wallX = data->player.pos.x + ray->perp_dist * ray->dir.x;
@@ -433,13 +433,14 @@ void	raycasting(t_data *data)
 	int	x;
 	t_ray	ray;
 	
-	for (x < WIN_WIDTH)
+	x = 0;
+	while (x < WIN_WIDTH)
 	{
-		init_ray(data, &ray);
+		init_ray(data, &ray, x);
 		dda(data, &ray);
-		calc_perp_dist(&ray);
-		draw_wall(&ray);
-		i++;
+		calc_perp_dist(data, &ray);
+		draw_wall(data, &ray, x);
+		x++;
 	}
 }
 

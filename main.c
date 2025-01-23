@@ -442,7 +442,7 @@ void	draw_wall(t_data *data, t_ray *ray, int x)
 	}
 }
 
-void	raycasting(t_data *data, int entity)
+void	raycasting(t_data *data, int entity, int limit)
 {
 	int	x;
 	t_ray	ray;
@@ -451,7 +451,7 @@ void	raycasting(t_data *data, int entity)
 	while (x < WIN_WIDTH)
 	{
 		init_ray(data, &ray, x);
-		dda(data, &ray, entity, INF);
+		dda(data, &ray, entity, limit);
 		calc_perp_dist(data, &ray);
 		draw_wall(data, &ray, x);
 		x++;
@@ -469,7 +469,7 @@ int	render(t_data *data)
 	delta_time = frame_time / 1000.0;
 	handle_key(data);
 	draw_ceil_floor(data);
-	raycasting(data, WALL);
+	raycasting(data, WALL, INF);
 	mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
 	return (0);
 }
